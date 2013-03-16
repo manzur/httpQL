@@ -12,6 +12,10 @@ public class Runner {
 		responseProcessor = new ResponseProcessor(queryDB);
 		connector = new Connector(queryDB);
 
+		// IDEA:
+		// This can be done as a stream processing
+		// response = filter mapQueryToResponse mapTextToQueryqueryText
+
 		String query = getQuery();
 		Integer queryID = queryProcessor.process(query);
 
