@@ -3,7 +3,7 @@
 #### Two facts form the base this project:
 - Internet is a big *database* that contains lots of pages
 
-- Web-server is nothing more than *interpretator* that accepts http protocol as a language and produces a web page
+- Web-server is nothing more that *interpretator* that accepts http protocol as a language and produces a web page
 
 So by concluding these two facts we came to that sql language can be used to model web-client colloboration on top of http.
 
@@ -62,12 +62,4 @@ Let's see some examples how SQL could be used(further on this customized SQL is 
 
      `delete * from index.html`
         
-
-    
-
-
-
-
-
-
 
