@@ -1,20 +1,39 @@
 <?xml version="1.0"?>
-<project name="httpQL" basedir="." default="run">
-    <property name="ragel_src" value="./parser/com/httpQL"/>
-	<property name="ragel_file" value="QueryProcessor"/>
-    <property name="dst" value="./src/com/httpQL"/>
-    <property name="bin" value="./bin"/>
 
-	<target name="compile_ragel">
+<project name="httpQL" default="test">
+
+    <property file="project.properties" />
+
+    <path id="binpath">
+        <path location="${bin}" />
+    </path>
+
+    <target name="compile_ragel">
 		<exec command="ragel -J ${ragel_src}/${ragel_file}.rl" />
-        <copy file="${ragel_src}/${ragel_file}.java" tofile="${dst}/${ragel_file}.java" />
+        <move file="${ragel_src}/${ragel_file}.java" tofile="${dst}/${ragel_file}.java" />
 	</target>
+
 
 	<target name="main" depends="compile_ragel">
         <javac srcdir="${dst}"
          destdir="bin"
-		/>
+         >
+         </javac>
 	</target>
+
+    <target name="compile-tests">
+        <javac srcdir="tests" destdir="bin" />
+    </target>
+
+    <target name="test" depends="main, compile-tests">
+        <junit haltonfailure="true">
+            <classpath refid="binpath" />
+            <formatter type="plain" usefile="false" /> 
+            <formatter type="plain" /> 
+            <test name="com.httpQL.TestQueryProcessor" />
+        </junit>
+    </target>
+
 
 	<target name="run" depends="main">
         <java classname="com.httpQL.Runner"
