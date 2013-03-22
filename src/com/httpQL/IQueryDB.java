@@ -13,7 +13,7 @@ package com.httpQL;
 
 public interface IQueryDB {
 
-	boolean putQuery(Query query);
+	Integer putQuery(Query query);
 
 	Query getQuery(Integer id);
 

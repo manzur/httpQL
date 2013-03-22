@@ -14,18 +14,18 @@
 	</target>
 
 
-	<target name="main" depends="compile_ragel">
+    <target name="compile-tests">
+        <javac srcdir="tests" destdir="bin" />
+    </target>
+
+	<target name="compile" depends="compile_ragel, compile-tests">
         <javac srcdir="${dst}"
          destdir="bin"
          >
          </javac>
 	</target>
 
-    <target name="compile-tests">
-        <javac srcdir="tests" destdir="bin" />
-    </target>
-
-    <target name="test" depends="main, compile-tests">
+    <target name="test" depends="compile">
         <junit haltonfailure="true">
             <classpath refid="binpath" />
             <formatter type="plain" usefile="false" /> 
@@ -35,7 +35,7 @@
     </target>
 
 
-	<target name="run" depends="main">
+	<target name="run" depends="compile">
         <java classname="com.httpQL.Runner"
             classpath="${bin}"></java>
 	</target>
