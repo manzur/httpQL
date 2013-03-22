@@ -97,7 +97,7 @@ public class TestQueryProcessor {
 	public void setUp() {
 		queryDB = new QueryDB();
 		queryProcessor = new QueryProcessor(queryDB);
-		Utils.turnOnVerboseMode();
+		// Utils.turnOnVerboseMode();
 	}
 
 	@Test
