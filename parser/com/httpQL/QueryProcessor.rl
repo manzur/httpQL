@@ -1,11 +1,11 @@
 package com.httpQL;
 
 
+
 import java.util.List;
 import java.util.LinkedList;
 
-import org.omg.CORBA.portable.Delegate;
-
+import com.httpQL.IQueryDB;
 import com.httpQL.QueryCondition;
 import com.httpQL.Utils;
 
@@ -96,7 +96,10 @@ public class QueryProcessor {
 	%% write data;
 	
 	public Integer process(String queryText) {
-		return -1;
+		Query query = parse(queryText);
+		Integer result = queryDB.putQuery(query);
+		
+		return result;
 	}
 	
 	Query parse(String queryText) { 

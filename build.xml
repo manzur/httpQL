@@ -30,7 +30,7 @@
             <classpath refid="binpath" />
             <formatter type="plain" usefile="false" /> 
             <formatter type="plain" /> 
-            <test name="com.httpQL.TestQueryProcessor" />
+            <test name="com.httpQL.AllTests" />
         </junit>
     </target>
 

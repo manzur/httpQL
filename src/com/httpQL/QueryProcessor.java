@@ -3,11 +3,11 @@
 package com.httpQL;
 
 
+
 import java.util.List;
 import java.util.LinkedList;
 
-import org.omg.CORBA.portable.Delegate;
-
+import com.httpQL.IQueryDB;
 import com.httpQL.QueryCondition;
 import com.httpQL.Utils;
 
@@ -237,7 +237,10 @@ static final int querer_en_main = 1;
 // line 97 "parser/com/httpQL/QueryProcessor.rl"
 	
 	public Integer process(String queryText) {
-		return -1;
+		Query query = parse(queryText);
+		Integer result = queryDB.putQuery(query);
+		
+		return result;
 	}
 	
 	Query parse(String queryText) { 
@@ -257,14 +260,14 @@ static final int querer_en_main = 1;
 		Utils.debugMsg("-------------------------------");
 		
 		
-// line 261 "parser/com/httpQL/QueryProcessor.java"
+// line 264 "parser/com/httpQL/QueryProcessor.java"
 	{
 	cs = querer_start;
 	}
 
-// line 119 "parser/com/httpQL/QueryProcessor.rl"
+// line 122 "parser/com/httpQL/QueryProcessor.rl"
 		
-// line 268 "parser/com/httpQL/QueryProcessor.java"
+// line 271 "parser/com/httpQL/QueryProcessor.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -387,7 +390,7 @@ case 1:
 // line 82 "parser/com/httpQL/QueryProcessor.rl"
 	{site = toStringAndClean(); }
 	break;
-// line 391 "parser/com/httpQL/QueryProcessor.java"
+// line 394 "parser/com/httpQL/QueryProcessor.java"
 			}
 		}
 	}
@@ -403,7 +406,7 @@ case 2:
 					attributeValue = toStringAndClean();
 				}
 	break;
-// line 407 "parser/com/httpQL/QueryProcessor.java"
+// line 410 "parser/com/httpQL/QueryProcessor.java"
 		}
 	}
 
@@ -452,7 +455,7 @@ case 4:
 				  	Utils.debugMsg("=================");
 				}
 	break;
-// line 456 "parser/com/httpQL/QueryProcessor.java"
+// line 459 "parser/com/httpQL/QueryProcessor.java"
 		}
 	}
 	}
@@ -462,7 +465,7 @@ case 5:
 	break; }
 	}
 
-// line 120 "parser/com/httpQL/QueryProcessor.rl"
+// line 123 "parser/com/httpQL/QueryProcessor.rl"
 		
 		Query result = new Query();
 		if(cs >= querer_first_final) {

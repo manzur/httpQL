@@ -20,6 +20,7 @@ public class TestQueryProcessor {
 	static final String queryText8 = "update index.html set _contents = \"Contents of the file1 line1 line2 lineN\"";
 	static final String queryText9 = "delete * from index.html";
 
+	private IQueryDB queryDB;
 	private QueryProcessor queryProcessor;
 
 	static final Query query1 = new Query();
@@ -94,7 +95,8 @@ public class TestQueryProcessor {
 
 	@Before
 	public void setUp() {
-		queryProcessor = new QueryProcessor(null);
+		queryDB = new QueryDB();
+		queryProcessor = new QueryProcessor(queryDB);
 		Utils.turnOnVerboseMode();
 	}
 
@@ -119,7 +121,8 @@ public class TestQueryProcessor {
 	}
 
 	private void testQuery(String queryText, Query query) {
-		Query result = queryProcessor.parse(queryText);
+		Integer queryID = queryProcessor.process(queryText);
+		Query result = queryDB.getQuery(queryID);
 		Assert.assertEquals(query.toString(), result.toString());
 	}
 
