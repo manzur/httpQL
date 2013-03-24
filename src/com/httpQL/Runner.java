@@ -1,12 +1,16 @@
 package com.httpQL;
 
+import java.io.IOException;
+
+import org.apache.http.client.ClientProtocolException;
+
 public class Runner {
 	QueryProcessor queryProcessor;
 	ResponseProcessor responseProcessor;
 	IQueryDB queryDB;
 	Connector connector;
 
-	void run() {
+	void run() throws ClientProtocolException, IOException {
 		queryDB = newQueryDB();
 		queryProcessor = new QueryProcessor(queryDB);
 		responseProcessor = new ResponseProcessor(queryDB);
@@ -37,7 +41,8 @@ public class Runner {
 		throw new UnsupportedOperationException();
 	}
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws ClientProtocolException,
+			IOException {
 		new Runner().run();
 	}
 }

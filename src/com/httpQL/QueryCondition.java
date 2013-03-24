@@ -11,8 +11,7 @@ public class QueryCondition {
 
 	public String toString() {
 		// @formatter:off
-		return "AttributeName: "  + attribute + "; "  
-			 + "AttributeValue: " + value;
+		return attribute + "=" + value;
 		// @formatter:on
 	}
 }
