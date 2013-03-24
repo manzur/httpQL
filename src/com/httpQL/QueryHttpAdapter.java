@@ -12,6 +12,12 @@ import org.apache.http.entity.StringEntity;
 public class QueryHttpAdapter extends HttpRequestBase implements
 		HttpEntityEnclosingRequest {
 
+	static final String HEAD_METHOD = "HEAD";
+	static final String GET_METHOD = "GET";
+	static final String POST_METHOD = "POST";
+	static final String PUT_METHOD = "PUT";
+	static final String DELETE_METHOD = "DELETE";
+
 	private Query query;
 
 	public QueryHttpAdapter(Query query) {
@@ -26,15 +32,15 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 		switch (query.method) {
 
 		case SELECT:
-			result = "GET";
+			result = GET_METHOD;
 			break;
 
 		case UPDATE:
-			result = "POST";
+			result = POST_METHOD;
 
 			for (QueryCondition condition : query.conditions) {
 				if (condition.attribute.equals("_contents")) {
-					result = "PUT";
+					result = PUT_METHOD;
 					break;
 				}
 			}
@@ -42,11 +48,11 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 			break;
 
 		case DELETE:
-			result = "DELETE";
+			result = DELETE_METHOD;
 			break;
 
 		default:
-			result = "HEAD";
+			result = HEAD_METHOD;
 
 		}
 
@@ -74,11 +80,12 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 
 	@Override
 	public HttpEntity getEntity() {
+
 		StringBuilder builder = new StringBuilder();
 
-		boolean first = false;
+		boolean first = true;
 		for (QueryCondition condition : query.conditions) {
-			if (first) {
+			if (!first) {
 				builder.append("&");
 			} else {
 				first = !first;
@@ -87,8 +94,15 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 			builder.append(condition.toString());
 		}
 
-		return new StringEntity(builder.toString(),
-				ContentType.APPLICATION_FORM_URLENCODED);
+		final ContentType contentType;
+		if (POST_METHOD.equals(getMethod())) {
+			contentType = ContentType.APPLICATION_FORM_URLENCODED;
+
+		} else {
+			contentType = ContentType.TEXT_PLAIN;
+		}
+
+		return new StringEntity(builder.toString(), contentType);
 
 	}
 

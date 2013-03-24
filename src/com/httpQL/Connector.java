@@ -43,7 +43,7 @@ public class Connector {
 	public static void main(String[] args) throws ClientProtocolException,
 			IOException {
 
-		// connectViaAdapter();
+		connectViaAdapter();
 		connectViaAdapterPost();
 		// fluentGet("output.html");
 		fluentPost("output1.html");
