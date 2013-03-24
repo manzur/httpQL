@@ -83,8 +83,6 @@ public class Connector {
 
 		QueryHttpAdapter request = new QueryHttpAdapter(query);
 		HttpParams params = new BasicHttpParams();
-		params.setParameter("Content11-type",
-				"application/x-www-form-urlencoded");
 		request.setParams(params);
 		HttpResponse response = client.execute(request);
 		response.getEntity().writeTo(System.out);

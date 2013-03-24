@@ -6,7 +6,10 @@
 
     <path id="binpath">
         <path location="${bin}" />
-    </path>
+        <fileset dir="libs">
+            <include name="**/*.jar"/>
+        </fileset>
+     </path>
 
     <target name="compile_ragel">
 		<exec command="ragel -J ${ragel_src}/${ragel_file}.rl" />
@@ -22,6 +25,7 @@
         <javac srcdir="${dst}"
          destdir="bin"
          >
+         <classpath refid="binpath" />
          </javac>
 	</target>
 
