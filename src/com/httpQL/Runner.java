@@ -2,6 +2,7 @@ package com.httpQL;
 
 import java.io.IOException;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
 public class Runner {
@@ -11,7 +12,7 @@ public class Runner {
 	Connector connector;
 
 	void run() throws ClientProtocolException, IOException {
-		queryDB = newQueryDB();
+		queryDB = new QueryDB();
 		queryProcessor = new QueryProcessor(queryDB);
 		responseProcessor = new ResponseProcessor(queryDB);
 		connector = new Connector(queryDB);
@@ -23,18 +24,17 @@ public class Runner {
 		String query = getQuery();
 		Integer queryID = queryProcessor.process(query);
 
-		Object response = connector.send(queryID);
+		HttpResponse response = connector.send(DOMAIN1, queryID);
 		Object filteredResponse = responseProcessor.process(queryID, response);
 
-		showResponse(filteredResponse);
+		// showResponse(filteredResponse);
 	}
 
-	private IQueryDB newQueryDB() {
-		throw new UnsupportedOperationException();
-	}
+	static final String DOMAIN1 = "http://narod.ru";
+	static final String queryText1 = "select * from index.html";
 
 	private String getQuery() {
-		throw new UnsupportedOperationException();
+		return queryText1;
 	}
 
 	private void showResponse(Object filteredResponse) {

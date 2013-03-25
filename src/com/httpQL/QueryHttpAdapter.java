@@ -2,6 +2,7 @@ package com.httpQL;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpEntityEnclosingRequest;
@@ -19,8 +20,10 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 	static final String DELETE_METHOD = "DELETE";
 
 	private Query query;
+	private final String domain;
 
-	public QueryHttpAdapter(Query query) {
+	public QueryHttpAdapter(String domain, Query query) {
+		this.domain = domain;
 		this.query = query;
 	}
 
@@ -62,15 +65,11 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 	@Override
 	public URI getURI() {
 		try {
-			return new URI(query.page);
+			return new URI(domain + "/" + query.page);
+
 		} catch (URISyntaxException e) {
 			throw new IllegalArgumentException("wrong formatted link");
 		}
-	}
-
-	@Override
-	public void setURI(URI uri) {
-		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -91,19 +90,28 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 				first = !first;
 			}
 
-			builder.append(condition.toString());
+			builder.append((condition.attribute) + "="
+					+ URLEncoder.encode(condition.value));
 		}
 
+		final String content;
 		final ContentType contentType;
 		if (POST_METHOD.equals(getMethod())) {
+			content = builder.toString();
 			contentType = ContentType.APPLICATION_FORM_URLENCODED;
 
 		} else {
+			content = builder.toString();
 			contentType = ContentType.TEXT_PLAIN;
 		}
 
-		return new StringEntity(builder.toString(), contentType);
+		return new StringEntity(content, contentType);
 
+	}
+
+	@Override
+	public void setURI(URI uri) {
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

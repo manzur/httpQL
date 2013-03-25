@@ -25,19 +25,23 @@ public class Connector {
 	private final IQueryDB queryDB;
 	private HttpClient httpClient;
 
+	private final static String GET_DOMAIN = "http://narod.ru";
+	private final static String POST_DOMAIN = "http://posttestserver.com";
+
 	public Connector(IQueryDB queryDB) {
 		this.queryDB = queryDB;
+		this.httpClient = new DefaultHttpClient();
 	}
 
-	public Object send(Integer queryID) throws ClientProtocolException,
-			IOException {
+	public HttpResponse send(String domain, Integer queryID)
+			throws ClientProtocolException, IOException {
 
 		Query query = queryDB.getQuery(queryID);
 
-		HttpUriRequest request = new QueryHttpAdapter(query);
-		httpClient.execute(request);
+		HttpUriRequest request = new QueryHttpAdapter(domain, query);
+		HttpResponse response = httpClient.execute(request);
 
-		return null;
+		return response;
 	}
 
 	public static void main(String[] args) throws ClientProtocolException,
@@ -58,12 +62,12 @@ public class Connector {
 
 		Query query = new Query();
 		query.method = QueryMethod.SELECT;
-		query.page = "http://narod.ru";
+		query.page = "index.html";
 		query.tag = "*";
 
 		HttpClient client = new DefaultHttpClient();
 
-		QueryHttpAdapter request = new QueryHttpAdapter(query);
+		QueryHttpAdapter request = new QueryHttpAdapter(GET_DOMAIN, query);
 		HttpResponse response = client.execute(request);
 		response.getEntity().writeTo(System.out);
 
@@ -74,14 +78,14 @@ public class Connector {
 
 		Query query = new Query();
 		query.method = QueryMethod.UPDATE;
-		query.page = "http://posttestserver.com/post.php";
+		query.page = "post.php";
 		query.tag = "*";
-		query.conditions.add(new QueryCondition("somekey", "somevalue"));
-		query.conditions.add(new QueryCondition("newkey", "newvalue"));
+		query.conditions.add(new QueryCondition("somekey #", "somevalue"));
+		query.conditions.add(new QueryCondition("newkey puper", "newvalue"));
 
 		HttpClient client = new DefaultHttpClient();
 
-		QueryHttpAdapter request = new QueryHttpAdapter(query);
+		QueryHttpAdapter request = new QueryHttpAdapter(POST_DOMAIN, query);
 		HttpParams params = new BasicHttpParams();
 		request.setParams(params);
 		HttpResponse response = client.execute(request);
