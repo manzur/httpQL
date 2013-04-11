@@ -1,5 +1,6 @@
 package com.httpQL;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -13,10 +14,10 @@ import org.apache.http.entity.StringEntity;
 public class QueryHttpAdapter extends HttpRequestBase implements
 		HttpEntityEnclosingRequest {
 
-	static final String HEAD_METHOD = "HEAD";
 	static final String GET_METHOD = "GET";
-	static final String POST_METHOD = "POST";
 	static final String PUT_METHOD = "PUT";
+	static final String POST_METHOD = "POST";
+	static final String HEAD_METHOD = "HEAD";
 	static final String DELETE_METHOD = "DELETE";
 
 	private Query query;
@@ -83,6 +84,7 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 		StringBuilder builder = new StringBuilder();
 
 		boolean first = true;
+
 		for (QueryCondition condition : query.conditions) {
 			if (!first) {
 				builder.append("&");
@@ -91,7 +93,7 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 			}
 
 			builder.append((condition.attribute) + "="
-					+ URLEncoder.encode(condition.value));
+					+ encodeParamValue(condition));
 		}
 
 		final String content;
@@ -107,6 +109,16 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 
 		return new StringEntity(content, contentType);
 
+	}
+
+	private String encodeParamValue(QueryCondition condition) {
+		try {
+			return URLEncoder.encode(condition.value, "UTF-8");
+
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}
 	}
 
 	@Override

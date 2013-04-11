@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -20,10 +22,13 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.apache.http.util.EntityUtils;
 
 public class Connector {
 	private final IQueryDB queryDB;
 	private HttpClient httpClient;
+
+	private List<HttpResponse> responses = new LinkedList<>();
 
 	private final static String GET_DOMAIN = "http://narod.ru";
 	private final static String POST_DOMAIN = "http://posttestserver.com";
@@ -40,8 +45,17 @@ public class Connector {
 
 		HttpUriRequest request = new QueryHttpAdapter(domain, query);
 		HttpResponse response = httpClient.execute(request);
+		responses.add(response);
 
 		return response;
+	}
+
+	public void release() throws IOException {
+		for (HttpResponse r : responses) {
+			EntityUtils.consume(r.getEntity());
+		}
+
+		httpClient.getConnectionManager().shutdown();
 	}
 
 	public static void main(String[] args) throws ClientProtocolException,

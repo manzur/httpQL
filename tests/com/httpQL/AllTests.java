@@ -5,7 +5,8 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 @RunWith(Suite.class)
-@SuiteClasses({ TestQueryProcessor.class, TestQueryDB.class })
+@SuiteClasses({ TestQueryProcessor.class, TestQueryDB.class,
+		TestXPathConverter.class })
 public class AllTests {
 
 }

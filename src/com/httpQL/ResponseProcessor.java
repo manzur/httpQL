@@ -13,10 +13,16 @@ public class ResponseProcessor {
 
 	public Object process(Integer queryID, HttpResponse response) {
 		try {
-			response.getEntity().writeTo(System.out);
+			Query query = queryDB.getQuery(queryID);
+
+			// filter output only when select is used
+			if (query.method == QueryMethod.SELECT) {
+
+			} else {
+				response.getEntity().writeTo(System.out);
+			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 

@@ -1,8 +1,8 @@
 package com.httpQL;
 
 public class QueryCondition {
-	String attribute;
-	String value;
+	final String attribute;
+	final String value;
 
 	public QueryCondition(String attribute, String value) {
 		this.attribute = attribute;
@@ -10,8 +10,6 @@ public class QueryCondition {
 	}
 
 	public String toString() {
-		// @formatter:off
 		return attribute + "=" + value;
-		// @formatter:on
 	}
 }
