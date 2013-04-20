@@ -23,75 +23,58 @@ public class TestQueryProcessor {
 	private IQueryDB queryDB;
 	private QueryProcessor queryProcessor;
 
-	static final Query query1 = new Query();
-	static {
-		query1.method = QueryMethod.SELECT;
-		query1.tag = "*";
-		query1.page = "index.html";
-	}
+	//@formatter:off
+	static final Query query1 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+													.setTag("*")
+													.setPage("index.html")
+													.build();
 
-	static final Query query2 = new Query();
-	static {
-		query2.method = QueryMethod.SELECT;
-		query2.tag = "body";
-		query2.page = "index.html";
-	}
+	static final Query query2 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+													.setTag("body")
+													.setPage("index.html")
+													.build();
 
-	static final Query query3 = new Query();
-	static {
-		query3.method = QueryMethod.SELECT;
-		query3.tag = "ul";
-		query3.page = "index.html";
-	}
+	static final Query query3 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+													.setTag("ul")
+													.setPage("index.html")
+													.build();
 
-	static final Query query4 = new Query();
-	static {
-		query4.method = QueryMethod.SELECT;
-		query4.tag = "ul";
-		query4.page = "index.html";
-		query4.conditions.add(new QueryCondition("ul.class", "invisible"));
-	}
+	static final Query query4 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+													.setTag("ul")
+													.setPage("index.html")
+													.addCondition(new QueryCondition("ul.class", "invisible"))
+													.build();
 
-	static final Query query5 = new Query();
-	static {
-		query5.method = QueryMethod.SELECT;
-		query5.tag = "p._value";
-		query5.page = "index.html";
-		query5.conditions.add(new QueryCondition("p.id", "1"));
-	}
+	static final Query query5 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+												    .setTag("p._value")
+												    .setPage("index.html")
+												    .addCondition(new QueryCondition("p.id", "1"))
+												    .build();
 
-	static final Query query6 = new Query();
-	static {
-		query6.method = QueryMethod.SELECT;
-		query6.tag = "_head";
-		query6.page = "index.html";
-	}
+	static final Query query6 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+													.setTag("_head")
+													.setPage("index.html")
+													.build();
 
-	static final Query query7 = new Query();
-	static {
-		query7.method = QueryMethod.UPDATE;
-		query7.page = "index.html";
-		query7.conditions.add(new QueryCondition("name", "myname"));
-		query7.conditions.add(new QueryCondition("bankId", "mybank"));
-		query7.conditions.add(new QueryCondition("cardId", "0777"));
-		query7.conditions.add(new QueryCondition("form", "myform"));
-	}
+	static final Query query7 = Query.queryBuilder().setMethod(QueryMethod.UPDATE)
+													.setPage("index.html")
+													.addCondition(new QueryCondition("name", "myname"))
+													.addCondition(new QueryCondition("bankId", "mybank"))
+													.addCondition(new QueryCondition("cardId", "0777"))
+													.addCondition(new QueryCondition("form", "myform"))
+													.build();
 
-	static final Query query8 = new Query();
-	static {
-		query8.method = QueryMethod.UPDATE;
-		query8.tag = "_head";
-		query8.page = "index.html";
-		query8.conditions.add(new QueryCondition("_contents",
-				"Contents of the file1 line1 line2 lineN"));
-	}
+	static final Query query8 = Query.queryBuilder().setMethod(QueryMethod.UPDATE)
+													.setTag("_head")
+													.setPage("index.html")
+													.addCondition(new QueryCondition("_contents", "Contents of the file1 line1 line2 lineN"))
+													.build();
 
-	static final Query query9 = new Query();
-	static {
-		query9.method = QueryMethod.DELETE;
-		query9.tag = "*";
-		query9.page = "index.html";
-	}
+	static final Query query9 = Query.queryBuilder().setMethod(QueryMethod.DELETE)
+													.setTag("*")
+													.setPage("index.html")
+													.build();
+	//@formatter:on		
 
 	@Before
 	public void setUp() {

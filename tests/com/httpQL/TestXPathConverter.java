@@ -52,10 +52,11 @@ public class TestXPathConverter {
 	}
 
 	private static Query makeQuery(String tag) {
-		Query query = new Query();
-		query.method = QueryMethod.SELECT;
-		query.tag = tag;
-
+		//@formatter:off
+		Query query = Query.queryBuilder().setMethod(QueryMethod.SELECT)
+										  .setTag(tag)
+										  .build();
+		//@formatter:on
 		return query;
 	}
 

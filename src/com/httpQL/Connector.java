@@ -74,10 +74,12 @@ public class Connector {
 	private static void connectViaAdapter() throws ClientProtocolException,
 			IOException {
 
-		Query query = new Query();
-		query.method = QueryMethod.SELECT;
-		query.page = "index.html";
-		query.tag = "*";
+		//@formatter:off
+		Query query = Query.queryBuilder().setTag("*")
+										  .setMethod(QueryMethod.SELECT)
+										  .setPage("index.html")
+										  .build();
+		//@formatter:on
 
 		HttpClient client = new DefaultHttpClient();
 
@@ -90,12 +92,14 @@ public class Connector {
 	private static void connectViaAdapterPost() throws ClientProtocolException,
 			IOException {
 
-		Query query = new Query();
-		query.method = QueryMethod.UPDATE;
-		query.page = "post.php";
-		query.tag = "*";
-		query.conditions.add(new QueryCondition("somekey #", "somevalue"));
-		query.conditions.add(new QueryCondition("newkey puper", "newvalue"));
+		//@formatter:off
+		Query query = Query.queryBuilder().setTag("*")
+										  .setMethod(QueryMethod.UPDATE)
+										  .setPage("post.php")
+										  .addCondition(new QueryCondition("somekey #", "somevalue"))
+										  .addCondition(new QueryCondition("newkey puper", "newvalue"))
+										  .build();
+		//@formatter:on										  
 
 		HttpClient client = new DefaultHttpClient();
 

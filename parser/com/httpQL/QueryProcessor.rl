@@ -1,45 +1,29 @@
 package com.httpQL;
 
-
-
 import java.util.List;
 import java.util.LinkedList;
 
+import com.httpQL.ConditionType;
 import com.httpQL.IQueryDB;
+import com.httpQL.Query.QueryBuilder;
 import com.httpQL.QueryCondition;
 import com.httpQL.Utils;
 
 public class QueryProcessor {
-	private IQueryDB queryDB;
-	
-	private String tag;
-	private String site;
-	private String attributeName;
-	private String attributeValue;
-	private StringBuilder builder;
-	private QueryMethod method;
-	
-	private List<QueryCondition> attributes;
-	
-	private String toStringAndClean(){
-		String result = builder.toString();
-		builder = new StringBuilder();
-		return result;
-	}
 	
 	%%{
-		machine querer;
+		machine QueryParser;
 
 		action memchar {
 			builder.append(fc);
 		}
-		
+				
 		sp = [ ];
 		
-		methodType1 = /select/i @{method = QueryMethod.SELECT;} 			    
-			   	    | /delete/i @{method = QueryMethod.DELETE;};
+		selectDeleteMethod = /select/i @{method = QueryMethod.SELECT;} 			    
+			   	    	   | /delete/i @{method = QueryMethod.DELETE;};
 	
-	    methodType2 = /update/i @{method = QueryMethod.UPDATE;};
+	    updateMethod = /update/i @{method = QueryMethod.UPDATE;};
 		
 		name = (any - ( space | "=" ))+ $memchar;
 		
@@ -55,10 +39,22 @@ public class QueryProcessor {
 					attributeValue = toStringAndClean();
 				};
 							
-		condition = name sp* "=" sp* value %{
-			QueryCondition condition = new QueryCondition(attributeName, attributeValue);
-			attributes.add(condition);
-		};
+		binop = "<"  @{binaryOperation = ConditionType.LT; }
+			  | "<=" @{binaryOperation = ConditionType.LE; }
+			  | "="  @{binaryOperation = ConditionType.EQ; }
+			  | ">"  @{binaryOperation = ConditionType.GT; } 
+			  | ">=" @{binaryOperation = ConditionType.GE; };
+			  
+		
+	    condition = /limit/i sp* name sp* /by/ sp* value %{
+	    				QueryCondition condition = new QueryCondition(attributeName, attributeValue, ConditionType.LIMIT);
+		  				attributes.add(condition);
+				  }
+				
+				  | name sp* binop sp* value %{
+					  	QueryCondition condition = new QueryCondition(attributeName, attributeValue, binaryOperation);
+					  	attributes.add(condition);
+				  };
 		
 		conditions = condition 
 					 (sp+ /and/i  sp+ condition)*;
@@ -70,7 +66,7 @@ public class QueryProcessor {
 		
 		site = (any - space)+ $memchar;
 		
-		main := methodType1 sp+ tag sp+ >{tag = toStringAndClean();} /from/i sp+ site  (sp+ conditions_where)? >{site = toStringAndClean();}
+		main := selectDeleteMethod sp+ tag sp+ >{tag = toStringAndClean();} /from/i sp+ site (sp+ conditions_where)? >{site = toStringAndClean();}
 				%/{
 					Utils.debugMsg("=================");
 					Utils.debugMsg("method is " + method);
@@ -79,7 +75,7 @@ public class QueryProcessor {
 					Utils.debugMsg("=================");
 				}
 			  
-			  | methodType2 sp+ site sp+ >{site = toStringAndClean(); } /set/i sp+ conditions sp+ /where/i sp+ condition 
+			  | updateMethod sp+ site sp+ >{site = toStringAndClean(); } /set/i sp+ conditions sp+ /where/i sp+ condition 
 				%/{
 				  	Utils.debugMsg("=================");
 				  	Utils.debugMsg("method is " + method);
@@ -89,11 +85,16 @@ public class QueryProcessor {
 		
 	}%%
 
+	%% write data;
+
+	
+	private final IQueryDB queryDB;
+	private StringBuilder builder;
+	
 	public QueryProcessor(IQueryDB queryDB) {
 		this.queryDB = queryDB;
+		Utils.turnOnVerboseMode();
 	}
-	
-	%% write data;
 	
 	public Integer process(String queryText) {
 		Query query = parse(queryText);
@@ -102,8 +103,14 @@ public class QueryProcessor {
 		return result;
 	}
 	
-	Query parse(String queryText) { 
-		initFields();
+	private Query parse(String queryText) { 
+		String tag, site, attributeName, attributeValue;
+		tag = site = attributeName = attributeValue = null;
+		
+		QueryMethod method = null;
+		ConditionType binaryOperation = null;
+		builder = new StringBuilder();
+		List<QueryCondition> attributes = new LinkedList<>();
 		
 		int cs;
 
@@ -121,40 +128,35 @@ public class QueryProcessor {
 		%% write init;
 		%% write exec;
 		
-		Query result = new Query();
-		if(cs >= querer_first_final) {
+		QueryBuilder result = Query.queryBuilder();
+		if(cs >= QueryParser_first_final) {
 			
-			result.method = method;
-			if(result.method != QueryMethod.UPDATE) {
-				result.tag = tag;
+            result.setMethod(method);
+			if(method != QueryMethod.UPDATE) {
+                result.setTag(tag);
 			}
-			result.page = site;
+            result.setPage(site);
 
-			result.conditions.addAll(attributes);
-			
 			Utils.debugMsg("Conditions");
 			Utils.debugMsg("------------------");
 			
 			for(QueryCondition condition : attributes) {
+    			result.addCondition(condition);
 				Utils.debugMsg(condition.toString());
 			}
 			
-			Utils.debugMsg("------------------");
-			
+			Utils.debugMsg("------------------");			
 		}
+		
+		return result.build();
+	}
+
+	private String toStringAndClean(){
+		String result = builder.toString();
+		builder = new StringBuilder();
 		
 		return result;
 	}
 	
-	private void initFields() {
-		tag = null;
-		site = null;
-		method = null;
-		attributeName = null;
-		attributeValue = null;
-		
-		builder = new StringBuilder();
-		attributes = new LinkedList<>();
-	}
-
+	
 }

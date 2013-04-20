@@ -97,18 +97,24 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 		}
 
 		final String content;
-		final ContentType contentType;
+		final StringEntity result;
 		if (POST_METHOD.equals(getMethod())) {
-			content = builder.toString();
-			contentType = ContentType.APPLICATION_FORM_URLENCODED;
+			result = new StringEntity(builder.toString(),
+					ContentType.APPLICATION_FORM_URLENCODED);
 
 		} else {
-			content = builder.toString();
-			contentType = ContentType.TEXT_PLAIN;
+			try {
+				result = new StringEntity(builder.toString(), "UTF-8");
+
+			} catch (UnsupportedEncodingException e) {
+				// Should occur as only supported Encoding is UTF-8
+				e.printStackTrace();
+				throw new RuntimeException(e);
+
+			}
 		}
 
-		return new StringEntity(content, contentType);
-
+		return result;
 	}
 
 	private String encodeParamValue(QueryCondition condition) {

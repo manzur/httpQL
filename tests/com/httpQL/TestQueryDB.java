@@ -22,7 +22,7 @@ public class TestQueryDB {
 
 	@Test
 	public void testPresent() {
-		Query inputQuery = new Query();
+		Query inputQuery = Query.queryBuilder().build();
 		Integer queryID = queryDB.putQuery(inputQuery);
 		Query outputQuery = queryDB.getQuery(queryID);
 		assertEquals(inputQuery, outputQuery);
