@@ -3,9 +3,9 @@
 #### Two facts form the base this project:
 - Internet is a big *database* that contains lots of pages
 
-- Web-server is nothing more that *interpretator* that accepts http protocol as a language and produces a web page
+- Web-server is nothing more than *interpretator* that accepts http protocol as a language and produces a web page
 
-So by concluding these two facts we came to that sql language can be used to model web-client colloboration on top of http.
+So by concluding these two facts it occurs that sql language can be used to model web-client colloboration on top of http.
 
 Let's see some examples how SQL could be used(further on this customized SQL is called httpQL):
 
@@ -64,7 +64,7 @@ Select queries can be used to combine http GET request and xpath together. Let's
     </tr>
     <tr>
         <td>//bookstore/book[1]</td>
-        <td>select .bookstore.book from index.html limit book by 1</td>
+        <td>select .bookstore.book from index.html where limit book by 1</td>
     </tr>
     <tr>
         <td>//bookstore/book[@position &lt; 3]</td>
@@ -128,7 +128,7 @@ Select queries can be used to combine http GET request and xpath together. Let's
     </tr>
     <tr>
         <td>//ul[1]//ul[2]</td>
-        <td>select ul..ul from index.html where limit ul#1 by 1 and limit ui#2 by 2</td>
+        <td>select ul..ul from index.html where limit ul#1 by 1 and limit ul#2 by 2</td>
     </tr>
 
 </table>

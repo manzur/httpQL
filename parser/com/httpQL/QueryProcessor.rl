@@ -1,13 +1,16 @@
 package com.httpQL;
 
+
 import java.util.List;
 import java.util.LinkedList;
 
 import com.httpQL.ConditionType;
 import com.httpQL.IQueryDB;
+import com.httpQL.QueryMethod;
 import com.httpQL.Query.QueryBuilder;
 import com.httpQL.QueryCondition;
 import com.httpQL.Utils;
+import java.util.EnumSet;
 
 public class QueryProcessor {
 	
@@ -23,37 +26,44 @@ public class QueryProcessor {
 		selectDeleteMethod = /select/i @{method = QueryMethod.SELECT;} 			    
 			   	    	   | /delete/i @{method = QueryMethod.DELETE;};
 	
+	    insertMethod = /insert into/i @{method = QueryMethod.INSERT;};
+
 	    updateMethod = /update/i @{method = QueryMethod.UPDATE;};
 		
-		name = (any - ( space | "=" ))+ $memchar;
+		name = (any - ( space | "<" | "<=" | "=" | ">=" | ">" ))+ $memchar;
 		
-		value = (["]
-				(alnum+ $memchar) 
-				["])
-				
-				>{
-					attributeName = toStringAndClean();
-				}
-				
-				%~{
-					attributeValue = toStringAndClean();
-				};
-							
-		binop = "<"  @{binaryOperation = ConditionType.LT; }
-			  | "<=" @{binaryOperation = ConditionType.LE; }
-			  | "="  @{binaryOperation = ConditionType.EQ; }
-			  | ">"  @{binaryOperation = ConditionType.GT; } 
-			  | ">=" @{binaryOperation = ConditionType.GE; };
-			  
+		quoted = ['] 
+		          (any - ['])+
+				 ['];
+				  
+		value_type = alnum | "@" | "*" | "_" | quoted;
 		
-	    condition = /limit/i sp* name sp* /by/ sp* value %{
+		value = (
+				(["]
+				(value_type+ $memchar) 
+				["]) 
+				
+			  | (value_type+ $memchar))			  
+			  ;							
+				
+		binop = ("<"  @{binaryOperation = ConditionType.LT; }
+			  | "<="  @{binaryOperation = ConditionType.LE; }
+			  | "="   @{binaryOperation = ConditionType.EQ; }
+			  | ">"   @{binaryOperation = ConditionType.GT; } 
+			  | ">="  @{binaryOperation = ConditionType.GE; } )
+			  ;
+
+	    condition = /limit/i sp+ name sp+ >{attributeName = toStringAndClean(); Utils.debugMsg("name in " + attributeName);} /by/i sp+ value %{
+	    				attributeValue = toStringAndClean();
 	    				QueryCondition condition = new QueryCondition(attributeName, attributeValue, ConditionType.LIMIT);
 		  				attributes.add(condition);
 				  }
 				
-				  | name sp* binop sp* value %{
-					  	QueryCondition condition = new QueryCondition(attributeName, attributeValue, binaryOperation);
-					  	attributes.add(condition);
+				  | name sp* >{attributeName = toStringAndClean();} binop sp* value 
+				  %{
+	    			  attributeValue = toStringAndClean();
+					  QueryCondition condition = new QueryCondition(attributeName, attributeValue, binaryOperation);
+					  attributes.add(condition);
 				  };
 		
 		conditions = condition 
@@ -66,8 +76,11 @@ public class QueryProcessor {
 		
 		site = (any - space)+ $memchar;
 		
-		main := selectDeleteMethod sp+ tag sp+ >{tag = toStringAndClean();} /from/i sp+ site (sp+ conditions_where)? >{site = toStringAndClean();}
-				%/{
+		values =  any+ $memchar;
+ 
+		
+		main := selectDeleteMethod sp+ tag sp+ >{tag = toStringAndClean();} /from/i sp+ site (sp+ conditions_where)? >{site = toStringAndClean();} 
+				@{
 					Utils.debugMsg("=================");
 					Utils.debugMsg("method is " + method);
 					Utils.debugMsg("tag is " + tag);
@@ -75,7 +88,22 @@ public class QueryProcessor {
 					Utils.debugMsg("=================");
 				}
 			  
-			  | updateMethod sp+ site sp+ >{site = toStringAndClean(); } /set/i sp+ conditions sp+ /where/i sp+ condition 
+			  | insertMethod sp+ site sp+ >{site = toStringAndClean(); } /values/i "(" values %/{
+				  	String value = toStringAndClean();
+				  	int lastIndex = value.lastIndexOf(')');
+				  	value = value.substring(0, lastIndex);
+
+				  	Utils.debugMsg("=================");
+					Utils.debugMsg("method is " + method);
+					Utils.debugMsg("site is " + site);
+					Utils.debugMsg("put content is " + value);
+					Utils.debugMsg("=================");
+					
+					QueryCondition condition = new QueryCondition("values", value);
+	  				attributes.add(condition);
+                }
+
+			  | updateMethod sp+ site sp+ >{site = toStringAndClean();} /set/i sp+ conditions 
 				%/{
 				  	Utils.debugMsg("=================");
 				  	Utils.debugMsg("method is " + method);
@@ -87,13 +115,11 @@ public class QueryProcessor {
 
 	%% write data;
 
-	
 	private final IQueryDB queryDB;
 	private StringBuilder builder;
 	
 	public QueryProcessor(IQueryDB queryDB) {
 		this.queryDB = queryDB;
-		Utils.turnOnVerboseMode();
 	}
 	
 	public Integer process(String queryText) {
@@ -132,7 +158,7 @@ public class QueryProcessor {
 		if(cs >= QueryParser_first_final) {
 			
             result.setMethod(method);
-			if(method != QueryMethod.UPDATE) {
+			if(EnumSet.of(QueryMethod.SELECT, QueryMethod.DELETE).contains(method)) {
                 result.setTag(tag);
 			}
             result.setPage(site);
