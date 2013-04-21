@@ -9,10 +9,12 @@ import com.httpQL.IQueryDB;
 import com.httpQL.QueryMethod;
 import com.httpQL.Query.QueryBuilder;
 import com.httpQL.QueryCondition;
-import com.httpQL.Utils;
+import java.util.logging.*;
+
 import java.util.EnumSet;
 
 public class QueryProcessor {
+	private Logger logger = CustomLogger.getLogger(QueryProcessor.class.getName());
 	
 	%%{
 		machine QueryParser;
@@ -53,7 +55,7 @@ public class QueryProcessor {
 			  | ">="  @{binaryOperation = ConditionType.GE; } )
 			  ;
 
-	    condition = /limit/i sp+ name sp+ >{attributeName = toStringAndClean(); Utils.debugMsg("name in " + attributeName);} /by/i sp+ value %{
+	    condition = /limit/i sp+ name sp+ >{attributeName = toStringAndClean(); logger.info("name in " + attributeName);} /by/i sp+ value %{
 	    				attributeValue = toStringAndClean();
 	    				QueryCondition condition = new QueryCondition(attributeName, attributeValue, ConditionType.LIMIT);
 		  				attributes.add(condition);
@@ -81,11 +83,11 @@ public class QueryProcessor {
 		
 		main := selectDeleteMethod sp+ tag sp+ >{tag = toStringAndClean();} /from/i sp+ site (sp+ conditions_where)? >{site = toStringAndClean();} 
 				@{
-					Utils.debugMsg("=================");
-					Utils.debugMsg("method is " + method);
-					Utils.debugMsg("tag is " + tag);
-					Utils.debugMsg("site is " + site);
-					Utils.debugMsg("=================");
+					logger.info("=================");
+					logger.info("method is " + method);
+					logger.info("tag is " + tag);
+					logger.info("site is " + site);
+					logger.info("=================");
 				}
 			  
 			  | insertMethod sp+ site sp+ >{site = toStringAndClean(); } /values/i "(" values %/{
@@ -93,11 +95,11 @@ public class QueryProcessor {
 				  	int lastIndex = value.lastIndexOf(')');
 				  	value = value.substring(0, lastIndex);
 
-				  	Utils.debugMsg("=================");
-					Utils.debugMsg("method is " + method);
-					Utils.debugMsg("site is " + site);
-					Utils.debugMsg("put content is " + value);
-					Utils.debugMsg("=================");
+				  	logger.info("=================");
+				  	logger.info("method is " + method);
+				  	logger.info("site is " + site);
+				  	logger.info("put content is " + value);
+				  	logger.info("=================");
 					
 					QueryCondition condition = new QueryCondition("values", value);
 	  				attributes.add(condition);
@@ -105,10 +107,10 @@ public class QueryProcessor {
 
 			  | updateMethod sp+ site sp+ >{site = toStringAndClean();} /set/i sp+ conditions 
 				%/{
-				  	Utils.debugMsg("=================");
-				  	Utils.debugMsg("method is " + method);
-				  	Utils.debugMsg("site is " + site);
-				  	Utils.debugMsg("=================");
+				  	logger.info("=================");
+				  	logger.info("method is " + method);
+				  	logger.info("site is " + site);
+				  	logger.info("=================");
 				};
 		
 	}%%
@@ -147,9 +149,9 @@ public class QueryProcessor {
 			eof = pe;
 		
 		
-		Utils.debugMsg("-------------------------------");
-		Utils.debugMsg("=" + queryText  +"=");
-		Utils.debugMsg("-------------------------------");
+		logger.info("-------------------------------");
+		logger.info("=" + queryText  +"=");
+		logger.info("-------------------------------");
 		
 		%% write init;
 		%% write exec;
@@ -163,15 +165,15 @@ public class QueryProcessor {
 			}
             result.setPage(site);
 
-			Utils.debugMsg("Conditions");
-			Utils.debugMsg("------------------");
+            logger.info("Conditions");
+            logger.info("------------------");
 			
 			for(QueryCondition condition : attributes) {
     			result.addCondition(condition);
-				Utils.debugMsg(condition.toString());
+    			logger.info(condition.toString());
 			}
 			
-			Utils.debugMsg("------------------");			
+			logger.info("------------------");			
 		}
 		
 		return result.build();

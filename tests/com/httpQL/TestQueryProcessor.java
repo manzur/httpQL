@@ -2,6 +2,8 @@ package com.httpQL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import junit.framework.Assert;
 
@@ -197,6 +199,8 @@ public class TestQueryProcessor {
 	public void setUp() {
 		queryDB = new QueryDB();
 		queryProcessor = new QueryProcessor(queryDB);
+
+		Logger.getLogger("").setLevel(Level.INFO);
 	}
 
 	@Test
