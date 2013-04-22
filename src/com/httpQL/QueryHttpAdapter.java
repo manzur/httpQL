@@ -15,9 +15,9 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 		HttpEntityEnclosingRequest {
 
 	static final String GET_METHOD = "GET";
+	static final String HEAD_METHOD = "HEAD";
 	static final String PUT_METHOD = "PUT";
 	static final String POST_METHOD = "POST";
-	static final String HEAD_METHOD = "HEAD";
 	static final String DELETE_METHOD = "DELETE";
 
 	private Query query;
@@ -31,7 +31,7 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 	@Override
 	public String getMethod() {
 
-		String result;
+		final String result;
 
 		switch (query.method) {
 
@@ -39,16 +39,12 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 			result = GET_METHOD;
 			break;
 
+		case INSERT:
+			result = PUT_METHOD;
+			break;
+
 		case UPDATE:
 			result = POST_METHOD;
-
-			for (QueryCondition condition : query.conditions) {
-				if (condition.attribute.equals("_contents")) {
-					result = PUT_METHOD;
-					break;
-				}
-			}
-
 			break;
 
 		case DELETE:
@@ -96,7 +92,6 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 					+ encodeParamValue(condition));
 		}
 
-		final String content;
 		final StringEntity result;
 		if (POST_METHOD.equals(getMethod())) {
 			result = new StringEntity(builder.toString(),
@@ -107,10 +102,9 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 				result = new StringEntity(builder.toString(), "UTF-8");
 
 			} catch (UnsupportedEncodingException e) {
-				// Should occur as only supported Encoding is UTF-8
+				// Should not occur as only supported Encoding is UTF-8
 				e.printStackTrace();
 				throw new RuntimeException(e);
-
 			}
 		}
 

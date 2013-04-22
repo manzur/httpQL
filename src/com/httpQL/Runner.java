@@ -25,7 +25,7 @@ public class Runner {
 		Integer queryID = queryProcessor.process(query);
 
 		HttpResponse response = connector.send(DOMAIN1, queryID);
-		Object filteredResponse = responseProcessor.process(queryID, response);
+		responseProcessor.process(queryID, response);
 
 		connector.release();
 		// showResponse(filteredResponse);

@@ -38,7 +38,7 @@ public class QueryProcessor {
 		          (any - ['])+
 				 ['];
 				  
-		value_type = alnum | "@" | "*" | "_" | quoted;
+		value_type = alnum | "@" | "*" | "_" | "(" | ")" | quoted;
 		
 		value = (
 				(["]
@@ -122,6 +122,7 @@ public class QueryProcessor {
 	
 	public QueryProcessor(IQueryDB queryDB) {
 		this.queryDB = queryDB;
+		logger.setLevel(Level.INFO);
 	}
 	
 	public Integer process(String queryText) {

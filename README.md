@@ -64,15 +64,15 @@ Select queries can be used to combine http GET request and xpath together. Let's
     </tr>
     <tr>
         <td>//bookstore/book[1]</td>
-        <td>select .bookstore.book from index.html where limit book by 1</td>
+        <td>select bookstore.book from index.html where limit book by 1</td>
     </tr>
     <tr>
         <td>//bookstore/book[@position &lt; 3]</td>
-        <td>select .bookstore.book from index.html where book@position &lt; 3</td>
+        <td>select bookstore.book from index.html where book@position &lt; 3</td>
     </tr>
     <tr>
         <td>//bookstore/book[@position=@last()]</td>
-        <td>select .bookstore.book from index.html where book@position = @last</td>
+        <td>select bookstore.book from index.html where book@position = @last()</td>
     </tr>
     <tr>
         <td>//title[@lang]</td>
@@ -84,31 +84,31 @@ Select queries can be used to combine http GET request and xpath together. Let's
     </tr>
     <tr>
         <td>//bookstore/book[@price &gt; 35]</td>
-        <td>select .bookstore.book from index.html where book@price &gt; 35</td>
+        <td>select bookstore.book from index.html where book@price &gt; 35</td>
     </tr>
     <tr>
         <td>//bookstore/book[@price &gt; 35]/title</td>
-        <td>select .bookstore.book.title from index.html where book@price &gt; 35</td>
+        <td>select bookstore.book.title from index.html where book@price &gt; 35</td>
     </tr>
     <tr>
         <td>//bookstore/book/title</td>
-        <td>select .bookstore.book.title from index.html </td>
+        <td>select bookstore.book.title from index.html </td>
     </tr>
     <tr>
         <td>//bookstore/book/price/text()</td>
-        <td>select .bookstore.book.price@text from index.html</td>
+        <td>select bookstore.book.price@text from index.html</td>
     </tr>
     <tr>
         <td>//host/service[text='DNS']</td>
         <td>select host.service from index.html where service@text() = 'DNS'</td>
     </tr>
     <tr>
-        <td>//network/host/interface/arec/text()</td>
+        <td>//network/host[2]/interface/arec/text()</td>
         <td>select network.host.interface.arec@text() from index.html limit host by 2</td>
     </tr>
     <tr>
-        <td>//*[speciality]</td>
-        <td>select * from index.html where @speciality=*</td>
+        <td>//*[@speciality]</td>
+        <td>select * from index.html where *@speciality=*</td>
     </tr>
     <tr>
         <td>//degree[@from='Harvard']</td>
@@ -119,11 +119,11 @@ Select queries can be used to combine http GET request and xpath together. Let's
         <td>select author from index.html where author@text() = 'Bob Martin'</td>
     </tr>
     <tr>
-        <td>//author[firstname='Bob' and lastname='Martin']</td>
+        <td>//author[@firstname='Bob' and @lastname='Martin']</td>
         <td>select author from index.html where author@firstname='Bob' and author@lastname='Martin'</td>
     </tr>
     <tr>
-        <td>//*[id='....']/uil/li[1]/div[2]/p[1]/a</td>
+        <td>//*[id='w3c_home_upcoming_events']/ul/li[1]/div[2]/p[1]/a</td>
         <td>select *.ul.li.div.p.a from index.html where *@id='w3c_home_upcoming_events' and limit li by 1 and limit div by 2 and limit p by 1</td>
     </tr>
     <tr>

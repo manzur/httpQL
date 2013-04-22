@@ -23,15 +23,15 @@ public class TestQueryProcessor {
 	static final String queryText6 = "select .bookstore from index.html";
 	static final String queryText7 = "select bookstore.book from index.html";
 	static final String queryText8 = "select bookstore..book from index.html";
-	static final String queryText9 = "select .bookstore.book from index.html where limit book by 1";
-	static final String queryText10 = "select .bookstore.book from index.html where book@position < 3";
-	static final String queryText11 = "select .bookstore.book from index.html where book@position = @last";
+	static final String queryText9 = "select bookstore.book from index.html where limit book by 1";
+	static final String queryText10 = "select bookstore.book from index.html where book@position < 3";
+	static final String queryText11 = "select bookstore.book from index.html where book@position = @last()";
 	static final String queryText12 = "select title from index.html where title@lang=*";
 	static final String queryText13 = "select title from index.html where title@lang='eng'";
-	static final String queryText14 = "select .bookstore.book from index.html where book@price > 35";
-	static final String queryText15 = "select .bookstore.book.title from index.html where book@price > 35";
-	static final String queryText16 = "select .bookstore.book.title from index.html";
-	static final String queryText17 = "select .bookstore.book.price@text from index.html";
+	static final String queryText14 = "select bookstore.book from index.html where book@price > 35";
+	static final String queryText15 = "select bookstore.book.title from index.html where book@price > 35";
+	static final String queryText16 = "select bookstore.book.title from index.html";
+	static final String queryText17 = "select bookstore.book.price@text() from index.html";
 	static final String queryText18 = "select host.service from index.html where service@text() = 'DNS'";
 	static final String queryText19 = "select network.host.interface.arec@text() from index.html where limit host by 2";
 	static final String queryText20 = "select * from index.html where @speciality=*";
@@ -87,21 +87,21 @@ public class TestQueryProcessor {
 													.build();
 	
 	static final Query query9 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-													.setTag(".bookstore.book")
+													.setTag("bookstore.book")
 													.setPage("index.html")
 													.addCondition(new QueryCondition("book", "1", ConditionType.LIMIT))
 													.build();
 
 	static final Query query10 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-													 .setTag(".bookstore.book")
+													 .setTag("bookstore.book")
 													 .setPage("index.html")
 													 .addCondition(new QueryCondition("book@position", "3", ConditionType.LT))
 													 .build();
 	
 	static final Query query11 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-			 										 .setTag(".bookstore.book")
+			 										 .setTag("bookstore.book")
 			 										 .setPage("index.html")
-			 										 .addCondition(new QueryCondition("book@position", "@last"))
+			 										 .addCondition(new QueryCondition("book@position", "@last()"))
 			 										 .build();
 
 	static final Query query12 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
@@ -118,24 +118,24 @@ public class TestQueryProcessor {
 	
 	
 	static final Query query14 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-			 										 .setTag(".bookstore.book")
+			 										 .setTag("bookstore.book")
 			 										 .setPage("index.html")
 			 										 .addCondition(new QueryCondition("book@price", "35", ConditionType.GT))
 			 										 .build();
 
 	static final Query query15 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-													 .setTag(".bookstore.book.title")
+													 .setTag("bookstore.book.title")
 													 .setPage("index.html")
 													 .addCondition(new QueryCondition("book@price", "35", ConditionType.GT))
 													 .build();
 	
 	static final Query query16 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-													 .setTag(".bookstore.book.title")
+													 .setTag("bookstore.book.title")
 													 .setPage("index.html")
 													 .build();
 	
 	static final Query query17 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
-			 										 .setTag(".bookstore.book.price@text")
+			 										 .setTag("bookstore.book.price@text()")
 			 										 .setPage("index.html")
 			 										 .build();
 	
@@ -154,7 +154,7 @@ public class TestQueryProcessor {
 	static final Query query20 = Query.queryBuilder().setMethod(QueryMethod.SELECT)
 			 										 .setTag("*")
 			 										 .setPage("index.html")
-			 										 .addCondition(new QueryCondition("@speciality", "*"))
+			 										 .addCondition(new QueryCondition("*@speciality", "*"))
 			 										 .build();
 
 	static final Query query21 = Query.queryBuilder().setMethod(QueryMethod.SELECT)

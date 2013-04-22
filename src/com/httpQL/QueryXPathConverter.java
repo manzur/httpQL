@@ -3,9 +3,11 @@ package com.httpQL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public class QueryXPathConverter {
@@ -23,12 +25,11 @@ public class QueryXPathConverter {
 
 		XPathElement result = null;
 
-		Iterator<XPathElement> iter = elements.iterator();
-
 		int index = 0;
-		while (iter.hasNext()) {
-			XPathElement element = iter.next();
-			if (element.tag.equals(tag) && index++ == nth) {
+		Iterator<XPathElement> iterator = elements.iterator();
+		while (iterator.hasNext()) {
+			XPathElement element = iterator.next();
+			if (element.tag.equals(tag) && ++index == nth) {
 				result = element;
 				break;
 			}
@@ -64,14 +65,15 @@ public class QueryXPathConverter {
 	}
 
 	private void extractXPathElements(String tag) {
-		StringTokenizer tokenizer = new StringTokenizer(tag, ".", true);
+		StringTokenizer tokenizer = new StringTokenizer(tag, ".@", true);
 
 		String prefix = "";
 		while (tokenizer.hasMoreTokens()) {
 			String token = tokenizer.nextToken();
 
-			if (token.equals(".")) {
+			if (token.equals(".") || token.equals("@")) {
 				prefix += "/";
+
 			} else {
 				XPathElement element = new XPathElement(prefix, token);
 				elements.add(element);
@@ -107,11 +109,11 @@ public class QueryXPathConverter {
 
 			if (position != -1) {
 				tag = token.substring(0, position);
-				index = Integer.valueOf(token.substring(position));
+				index = Integer.valueOf(token.substring(position + 1));
 
 			} else {
 				tag = token;
-				index = 0;
+				index = 1;
 			}
 
 			return new TagInfo(tag, index);
@@ -125,28 +127,57 @@ class XPathElement {
 	final String prefix;
 	final String tag;
 
-	public XPathElement(String tag) {
+	XPathElement(String tag) {
 		this("", tag);
 	}
 
-	public XPathElement(String prefix, String tag) {
+	XPathElement(String prefix, String tag) {
 		this.prefix = prefix;
 		this.tag = tag;
 	}
 
 	String build() {
-		return prefix + tag;
+		return prefix + tag + predicatesAsString();
 	}
 
-	public void addPredicate(QueryCondition condition) {
+	void addPredicate(QueryCondition condition) {
 		int leftPos = condition.attribute.indexOf('@');
 		int rightPos = condition.value.indexOf('@');
 
-		String left = condition.attribute.substring(leftPos + 1);
-		String right = condition.value.substring(rightPos + 1);
+		String left = leftPos != -1 ? condition.attribute.substring(leftPos)
+				: condition.attribute;
 
-		XPathPredicate predicate = new XPathPredicate(left, right);
+		String right = rightPos != -1 ? condition.value.substring(rightPos)
+				: condition.value;
+
+		XPathPredicate predicate = new XPathPredicate(left, right,
+				condition.conditionType);
 		predicates.add(predicate);
+	}
+
+	private String predicatesAsString() {
+		StringBuilder result = new StringBuilder();
+
+		boolean first = true;
+		for (XPathPredicate predicate : predicates) {
+			final String prepend;
+			if (first) {
+				first = false;
+				prepend = "";
+			} else {
+				prepend = " and ";
+			}
+
+			result.append(prepend);
+			result.append(predicate.toString());
+		}
+
+		if (result.length() > 0) {
+			result.insert(0, '[');
+			result.append("]");
+		}
+
+		return result.toString();
 	}
 
 }
@@ -154,22 +185,53 @@ class XPathElement {
 class XPathPredicate {
 
 	//@formatter:off
-	private static final Set<String> specFunctions = ImmutableSet.of( "last"
-  															        , "text" 
+	private static final Set<String> specFunctions = ImmutableSet.of( "last()"
+  															        , "text()" 
 															        , "position"
 															        );
+	
+	private static final Map<ConditionType, String> mapConditionToOp = ImmutableMap.of(
+																 						  ConditionType.LT, "<"
+																						, ConditionType.LE, "<="
+																						, ConditionType.EQ, "="
+																						, ConditionType.GE, ">="
+																						, ConditionType.GT, ">"
+																		 			   );
 	//@formatter:on
 
 	private String attribute;
 	private String value;
+	private ConditionType conditionType;
 
-	XPathPredicate(String left, String right) {
-		attribute = checkAndConvert(left);
-		value = checkAndConvert(right);
+	XPathPredicate(String attribute, String value, ConditionType conditionType) {
+		this.attribute = checkAndConvert(attribute);
+		this.value = checkAndConvert(value);
+		this.conditionType = conditionType;
 	}
 
-	private static String checkAndConvert(String s) {
-		return specFunctions.contains(s) ? s + "()" : s;
+	private String checkAndConvert(String s) {
+		if (s.equalsIgnoreCase("@text()")) {
+			return "text()";
+		}
+
+		return s;
+	}
+
+	@Override
+	public String toString() {
+		String result;
+		if (conditionType == ConditionType.LIMIT) {
+			result = value;
+
+		} else if (value.equals("*") && conditionType == ConditionType.EQ) {
+			result = attribute;
+
+		} else {
+			String binop = mapConditionToOp.get(conditionType);
+			result = attribute + binop + value;
+		}
+
+		return result;
 	}
 }
 
