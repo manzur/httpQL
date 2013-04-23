@@ -122,7 +122,16 @@ public class QueryProcessor {
 	
 	public QueryProcessor(IQueryDB queryDB) {
 		this.queryDB = queryDB;
-		logger.setLevel(Level.INFO);
+		if(checkDebugMode()) {
+			logger.setLevel(Level.INFO);
+		} else {
+			logger.setLevel(Level.SEVERE);
+		}
+	}
+	
+	boolean checkDebugMode() {
+		String debug = System.getProperty("program.debug", "false");
+		return Boolean.valueOf(debug);
 	}
 	
 	public Integer process(String queryText) {

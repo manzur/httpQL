@@ -313,7 +313,16 @@ static final int QueryParser_en_main = 1;
 	
 	public QueryProcessor(IQueryDB queryDB) {
 		this.queryDB = queryDB;
-		logger.setLevel(Level.INFO);
+		if(checkDebugMode()) {
+			logger.setLevel(Level.INFO);
+		} else {
+			logger.setLevel(Level.SEVERE);
+		}
+	}
+	
+	boolean checkDebugMode() {
+		String debug = System.getProperty("program.debug", "false");
+		return Boolean.valueOf(debug);
 	}
 	
 	public Integer process(String queryText) {
@@ -346,14 +355,14 @@ static final int QueryParser_en_main = 1;
 		logger.info("-------------------------------");
 		
 		
-// line 350 "parser/com/httpQL/QueryProcessor.java"
+// line 359 "parser/com/httpQL/QueryProcessor.java"
 	{
 	cs = QueryParser_start;
 	}
 
-// line 158 "parser/com/httpQL/QueryProcessor.rl"
+// line 167 "parser/com/httpQL/QueryProcessor.rl"
 		
-// line 357 "parser/com/httpQL/QueryProcessor.java"
+// line 366 "parser/com/httpQL/QueryProcessor.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -525,7 +534,7 @@ case 1:
 // line 108 "parser/com/httpQL/QueryProcessor.rl"
 	{site = toStringAndClean();}
 	break;
-// line 529 "parser/com/httpQL/QueryProcessor.java"
+// line 538 "parser/com/httpQL/QueryProcessor.java"
 			}
 		}
 	}
@@ -592,7 +601,7 @@ case 4:
 				  	logger.info("=================");
 				}
 	break;
-// line 596 "parser/com/httpQL/QueryProcessor.java"
+// line 605 "parser/com/httpQL/QueryProcessor.java"
 		}
 	}
 	}
@@ -602,7 +611,7 @@ case 5:
 	break; }
 	}
 
-// line 159 "parser/com/httpQL/QueryProcessor.rl"
+// line 168 "parser/com/httpQL/QueryProcessor.rl"
 		
 		QueryBuilder result = Query.queryBuilder();
 		if(cs >= QueryParser_first_final) {

@@ -1,8 +1,10 @@
 package com.httpQL;
 
 import java.io.IOException;
+import java.util.Iterator;
 
 import org.apache.http.HttpResponse;
+import org.htmlcleaner.ContentNode;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -14,7 +16,8 @@ public class ResponseProcessor {
 		this.queryDB = queryDB;
 	}
 
-	public void process(Integer queryID, HttpResponse response) {
+	public void process(Integer queryID, HttpResponse response)
+			throws ResponseProcessorException {
 		try {
 			Query query = queryDB.getQuery(queryID);
 
@@ -30,21 +33,43 @@ public class ResponseProcessor {
 				Object[] result = root.evaluateXPath(xpath);
 
 				for (Object o : result) {
-					System.out.println(o);
+					TagNode node = (TagNode) o;
+					System.out.print(node.getText());
+					// traverseAndPrint(node, 1);
 				}
 
 			} else {
 				response.getEntity().writeTo(System.out);
 			}
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (AbsentElementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (XPatherException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (IOException | AbsentElementException | XPatherException e) {
+			throw new ResponseProcessorException();
+		}
+	}
+
+	private void printTab(int tabCount) {
+		while (tabCount-- > 0) {
+			System.out.print("\t");
+		}
+	}
+
+	private void traverseAndPrint(TagNode node, int level) {
+
+		printTab(level);
+		System.out.print(node.getText());
+
+		Iterator iterator = node.getAllChildren().iterator();
+
+		while (iterator.hasNext()) {
+			Object next = iterator.next();
+
+			if (next instanceof ContentNode) {
+				printTab(level + 1);
+				System.out.println(((ContentNode) next).getContent());
+
+			} else if (next instanceof TagNode) {
+				traverseAndPrint((TagNode) next, level + 1);
+			}
 		}
 	}
 }

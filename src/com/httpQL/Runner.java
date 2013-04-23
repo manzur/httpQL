@@ -1,49 +1,79 @@
 package com.httpQL;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 
 public class Runner {
+	private final static String PROMPT = ">";
+
 	QueryProcessor queryProcessor;
 	ResponseProcessor responseProcessor;
 	IQueryDB queryDB;
 	Connector connector;
 
-	void run() throws ClientProtocolException, IOException {
+	Runner() {
 		queryDB = new QueryDB();
 		queryProcessor = new QueryProcessor(queryDB);
 		responseProcessor = new ResponseProcessor(queryDB);
 		connector = new Connector(queryDB);
+	}
+
+	void run(String domain, String query) {
+		System.out.println("Processing: " + query);
 
 		// IDEA:
 		// This can be done as a stream processing
 		// response = filter mapQueryToResponse mapTextToQueryqueryText
+		try {
+			Integer queryID = queryProcessor.process(query);
+			HttpResponse response = connector.send(domain, queryID);
+			responseProcessor.process(queryID, response);
 
-		String query = getQuery();
-		Integer queryID = queryProcessor.process(query);
+		} catch (ConnectorException e) {
+			System.out.println("Network error while connecting to domain "
+					+ domain);
+		} catch (ResponseProcessorException e) {
+			System.out.println("Some error occured while processing query");
 
-		HttpResponse response = connector.send(DOMAIN1, queryID);
-		responseProcessor.process(queryID, response);
+		}
+	}
 
+	void stop() {
 		connector.release();
-		// showResponse(filteredResponse);
 	}
 
-	static final String DOMAIN1 = "http://narod.ru";
-	static final String queryText1 = "select * from index.html";
-
-	private String getQuery() {
-		return queryText1;
-	}
-
-	private void showResponse(Object filteredResponse) {
-		throw new UnsupportedOperationException();
+	static void usage() {
+		System.out.println("Usage: program domainname");
 	}
 
 	public static void main(String[] args) throws ClientProtocolException,
 			IOException {
-		new Runner().run();
+
+		if (args.length != 1) {
+			usage();
+			return;
+		}
+
+		String domain = args[0];
+
+		BufferedReader reader = new BufferedReader(new InputStreamReader(
+				System.in));
+
+		while (true) {
+			System.out.print("\n" + PROMPT + " ");
+			System.out.flush();
+
+			String s = reader.readLine();
+			if (s == null) {
+				break;
+
+			} else if (s.trim().length() > 0) {
+				new Runner().run(domain, s);
+			}
+		}
 	}
 }

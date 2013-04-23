@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="httpQL" default="test">
+<project name="httpQL" default="run">
 
     <property file="project.properties" />
 
@@ -41,7 +41,9 @@
 
 	<target name="run" depends="compile">
         <java classname="com.httpQL.Runner"
-            classpath="${bin}"></java>
+            classpath="${bin}">
+            <classpath refid="binpath" />
+        </java>
 	</target>
 	
 </project>
