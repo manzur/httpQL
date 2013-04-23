@@ -31,6 +31,7 @@ public class Connector {
 			Query query = queryDB.getQuery(queryID);
 
 			HttpUriRequest request = new QueryHttpAdapter(domain, query);
+
 			HttpResponse response = httpClient.execute(request);
 			responses.add(response);
 

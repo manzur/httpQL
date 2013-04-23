@@ -1,10 +1,8 @@
 package com.httpQL;
 
 import java.io.IOException;
-import java.util.Iterator;
 
 import org.apache.http.HttpResponse;
-import org.htmlcleaner.ContentNode;
 import org.htmlcleaner.HtmlCleaner;
 import org.htmlcleaner.TagNode;
 import org.htmlcleaner.XPatherException;
@@ -34,8 +32,7 @@ public class ResponseProcessor {
 
 				for (Object o : result) {
 					TagNode node = (TagNode) o;
-					System.out.print(node.getText());
-					// traverseAndPrint(node, 1);
+					System.out.println(node.getText());
 				}
 
 			} else {
@@ -44,32 +41,10 @@ public class ResponseProcessor {
 
 		} catch (IOException | AbsentElementException | XPatherException e) {
 			throw new ResponseProcessorException();
-		}
-	}
 
-	private void printTab(int tabCount) {
-		while (tabCount-- > 0) {
-			System.out.print("\t");
-		}
-	}
-
-	private void traverseAndPrint(TagNode node, int level) {
-
-		printTab(level);
-		System.out.print(node.getText());
-
-		Iterator iterator = node.getAllChildren().iterator();
-
-		while (iterator.hasNext()) {
-			Object next = iterator.next();
-
-			if (next instanceof ContentNode) {
-				printTab(level + 1);
-				System.out.println(((ContentNode) next).getContent());
-
-			} else if (next instanceof TagNode) {
-				traverseAndPrint((TagNode) next, level + 1);
-			}
+			// strangely, htmlcleaner throws NPE instead of XPatherException
+		} catch (NullPointerException e) {
+			throw new ResponseProcessorException();
 		}
 	}
 }

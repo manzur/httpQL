@@ -2,6 +2,7 @@ package com.httpQL;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -204,7 +205,7 @@ public class TestQueryProcessor {
 	}
 
 	@Test
-	public void testSimpleQueries() {
+	public void testSimpleQueries() throws ParseException {
 		testQuery(queryText1, query1);
 		testQuery(queryText2, query2);
 		testQuery(queryText3, query3);
@@ -212,7 +213,7 @@ public class TestQueryProcessor {
 	}
 
 	@Test
-	public void testXPathQueries() {
+	public void testXPathQueries() throws ParseException {
 		testQuery(queryText5, query5);
 		testQuery(queryText6, query6);
 		testQuery(queryText7, query7);
@@ -236,7 +237,7 @@ public class TestQueryProcessor {
 		testQuery(queryText25, query25);
 	}
 
-	private void testQuery(String queryText, Query query) {
+	private void testQuery(String queryText, Query query) throws ParseException {
 		Integer queryID = queryProcessor.process(queryText);
 		Query result = queryDB.getQuery(queryID);
 		Assert.assertEquals(query.toString(), result.toString());

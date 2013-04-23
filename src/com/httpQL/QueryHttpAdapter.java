@@ -81,24 +81,31 @@ public class QueryHttpAdapter extends HttpRequestBase implements
 
 		boolean first = true;
 
-		for (QueryCondition condition : query.conditions) {
-			if (!first) {
-				builder.append("&");
-			} else {
-				first = !first;
+		final StringEntity result;
+
+		if (POST_METHOD.equals(getMethod())) {
+
+			for (QueryCondition condition : query.conditions) {
+				if (!first) {
+					builder.append("&");
+				} else {
+					first = !first;
+				}
+
+				builder.append((condition.attribute) + "="
+						+ encodeParamValue(condition));
 			}
 
-			builder.append((condition.attribute) + "="
-					+ encodeParamValue(condition));
-		}
-
-		final StringEntity result;
-		if (POST_METHOD.equals(getMethod())) {
 			result = new StringEntity(builder.toString(),
 					ContentType.APPLICATION_FORM_URLENCODED);
 
 		} else {
+			// put query
 			try {
+				if (query.conditions.size() > 0) {
+					builder.append(query.conditions.get(0).attribute);
+				}
+
 				result = new StringEntity(builder.toString(), "UTF-8");
 
 			} catch (UnsupportedEncodingException e) {

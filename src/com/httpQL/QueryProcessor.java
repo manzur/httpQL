@@ -3,6 +3,7 @@
 package com.httpQL;
 
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -19,11 +20,11 @@ public class QueryProcessor {
 	private Logger logger = CustomLogger.getLogger(QueryProcessor.class.getName());
 	
 	
-// line 116 "parser/com/httpQL/QueryProcessor.rl"
+// line 117 "parser/com/httpQL/QueryProcessor.rl"
 
 
 	
-// line 27 "parser/com/httpQL/QueryProcessor.java"
+// line 28 "parser/com/httpQL/QueryProcessor.java"
 private static byte[] init__QueryParser_actions_0()
 {
 	return new byte [] {
@@ -306,7 +307,7 @@ static final int QueryParser_error = 0;
 static final int QueryParser_en_main = 1;
 
 
-// line 119 "parser/com/httpQL/QueryProcessor.rl"
+// line 120 "parser/com/httpQL/QueryProcessor.rl"
 
 	private final IQueryDB queryDB;
 	private StringBuilder builder;
@@ -325,14 +326,15 @@ static final int QueryParser_en_main = 1;
 		return Boolean.valueOf(debug);
 	}
 	
-	public Integer process(String queryText) {
+	public Integer process(String queryText) throws ParseException {
 		Query query = parse(queryText);
+		
 		Integer result = queryDB.putQuery(query);
 		
 		return result;
 	}
 	
-	private Query parse(String queryText) { 
+	private Query parse(String queryText) throws ParseException { 
 		String tag, site, attributeName, attributeValue;
 		tag = site = attributeName = attributeValue = null;
 		
@@ -355,14 +357,14 @@ static final int QueryParser_en_main = 1;
 		logger.info("-------------------------------");
 		
 		
-// line 359 "parser/com/httpQL/QueryProcessor.java"
+// line 361 "parser/com/httpQL/QueryProcessor.java"
 	{
 	cs = QueryParser_start;
 	}
 
-// line 167 "parser/com/httpQL/QueryProcessor.rl"
+// line 169 "parser/com/httpQL/QueryProcessor.rl"
 		
-// line 366 "parser/com/httpQL/QueryProcessor.java"
+// line 368 "parser/com/httpQL/QueryProcessor.java"
 	{
 	int _klen;
 	int _trans = 0;
@@ -443,53 +445,53 @@ case 1:
 			switch ( _QueryParser_actions[_acts++] )
 			{
 	case 0:
-// line 22 "parser/com/httpQL/QueryProcessor.rl"
+// line 23 "parser/com/httpQL/QueryProcessor.rl"
 	{
 			builder.append(data[p]);
 		}
 	break;
 	case 1:
-// line 28 "parser/com/httpQL/QueryProcessor.rl"
+// line 29 "parser/com/httpQL/QueryProcessor.rl"
 	{method = QueryMethod.SELECT;}
 	break;
 	case 2:
-// line 29 "parser/com/httpQL/QueryProcessor.rl"
+// line 30 "parser/com/httpQL/QueryProcessor.rl"
 	{method = QueryMethod.DELETE;}
 	break;
 	case 3:
-// line 31 "parser/com/httpQL/QueryProcessor.rl"
+// line 32 "parser/com/httpQL/QueryProcessor.rl"
 	{method = QueryMethod.INSERT;}
 	break;
 	case 4:
-// line 33 "parser/com/httpQL/QueryProcessor.rl"
+// line 34 "parser/com/httpQL/QueryProcessor.rl"
 	{method = QueryMethod.UPDATE;}
 	break;
 	case 5:
-// line 51 "parser/com/httpQL/QueryProcessor.rl"
+// line 52 "parser/com/httpQL/QueryProcessor.rl"
 	{binaryOperation = ConditionType.LT; }
 	break;
 	case 6:
-// line 52 "parser/com/httpQL/QueryProcessor.rl"
+// line 53 "parser/com/httpQL/QueryProcessor.rl"
 	{binaryOperation = ConditionType.LE; }
 	break;
 	case 7:
-// line 53 "parser/com/httpQL/QueryProcessor.rl"
+// line 54 "parser/com/httpQL/QueryProcessor.rl"
 	{binaryOperation = ConditionType.EQ; }
 	break;
 	case 8:
-// line 54 "parser/com/httpQL/QueryProcessor.rl"
+// line 55 "parser/com/httpQL/QueryProcessor.rl"
 	{binaryOperation = ConditionType.GT; }
 	break;
 	case 9:
-// line 55 "parser/com/httpQL/QueryProcessor.rl"
+// line 56 "parser/com/httpQL/QueryProcessor.rl"
 	{binaryOperation = ConditionType.GE; }
 	break;
 	case 10:
-// line 58 "parser/com/httpQL/QueryProcessor.rl"
+// line 59 "parser/com/httpQL/QueryProcessor.rl"
 	{attributeName = toStringAndClean(); logger.info("name in " + attributeName);}
 	break;
 	case 11:
-// line 58 "parser/com/httpQL/QueryProcessor.rl"
+// line 59 "parser/com/httpQL/QueryProcessor.rl"
 	{
 	    				attributeValue = toStringAndClean();
 	    				QueryCondition condition = new QueryCondition(attributeName, attributeValue, ConditionType.LIMIT);
@@ -497,11 +499,11 @@ case 1:
 				  }
 	break;
 	case 12:
-// line 64 "parser/com/httpQL/QueryProcessor.rl"
+// line 65 "parser/com/httpQL/QueryProcessor.rl"
 	{attributeName = toStringAndClean();}
 	break;
 	case 13:
-// line 65 "parser/com/httpQL/QueryProcessor.rl"
+// line 66 "parser/com/httpQL/QueryProcessor.rl"
 	{
 	    			  attributeValue = toStringAndClean();
 					  QueryCondition condition = new QueryCondition(attributeName, attributeValue, binaryOperation);
@@ -509,15 +511,15 @@ case 1:
 				  }
 	break;
 	case 14:
-// line 84 "parser/com/httpQL/QueryProcessor.rl"
+// line 85 "parser/com/httpQL/QueryProcessor.rl"
 	{tag = toStringAndClean();}
 	break;
 	case 15:
-// line 84 "parser/com/httpQL/QueryProcessor.rl"
+// line 85 "parser/com/httpQL/QueryProcessor.rl"
 	{site = toStringAndClean();}
 	break;
 	case 16:
-// line 85 "parser/com/httpQL/QueryProcessor.rl"
+// line 86 "parser/com/httpQL/QueryProcessor.rl"
 	{
 					logger.info("=================");
 					logger.info("method is " + method);
@@ -527,14 +529,14 @@ case 1:
 				}
 	break;
 	case 17:
-// line 93 "parser/com/httpQL/QueryProcessor.rl"
+// line 94 "parser/com/httpQL/QueryProcessor.rl"
 	{site = toStringAndClean(); }
 	break;
 	case 19:
-// line 108 "parser/com/httpQL/QueryProcessor.rl"
+// line 109 "parser/com/httpQL/QueryProcessor.rl"
 	{site = toStringAndClean();}
 	break;
-// line 538 "parser/com/httpQL/QueryProcessor.java"
+// line 540 "parser/com/httpQL/QueryProcessor.java"
 			}
 		}
 	}
@@ -556,7 +558,7 @@ case 4:
 	while ( __nacts-- > 0 ) {
 		switch ( _QueryParser_actions[__acts++] ) {
 	case 11:
-// line 58 "parser/com/httpQL/QueryProcessor.rl"
+// line 59 "parser/com/httpQL/QueryProcessor.rl"
 	{
 	    				attributeValue = toStringAndClean();
 	    				QueryCondition condition = new QueryCondition(attributeName, attributeValue, ConditionType.LIMIT);
@@ -564,7 +566,7 @@ case 4:
 				  }
 	break;
 	case 13:
-// line 65 "parser/com/httpQL/QueryProcessor.rl"
+// line 66 "parser/com/httpQL/QueryProcessor.rl"
 	{
 	    			  attributeValue = toStringAndClean();
 					  QueryCondition condition = new QueryCondition(attributeName, attributeValue, binaryOperation);
@@ -572,11 +574,11 @@ case 4:
 				  }
 	break;
 	case 15:
-// line 84 "parser/com/httpQL/QueryProcessor.rl"
+// line 85 "parser/com/httpQL/QueryProcessor.rl"
 	{site = toStringAndClean();}
 	break;
 	case 18:
-// line 93 "parser/com/httpQL/QueryProcessor.rl"
+// line 94 "parser/com/httpQL/QueryProcessor.rl"
 	{
 				  	String value = toStringAndClean();
 				  	int lastIndex = value.lastIndexOf(')');
@@ -593,7 +595,7 @@ case 4:
                 }
 	break;
 	case 20:
-// line 109 "parser/com/httpQL/QueryProcessor.rl"
+// line 110 "parser/com/httpQL/QueryProcessor.rl"
 	{
 				  	logger.info("=================");
 				  	logger.info("method is " + method);
@@ -601,7 +603,7 @@ case 4:
 				  	logger.info("=================");
 				}
 	break;
-// line 605 "parser/com/httpQL/QueryProcessor.java"
+// line 607 "parser/com/httpQL/QueryProcessor.java"
 		}
 	}
 	}
@@ -611,7 +613,7 @@ case 5:
 	break; }
 	}
 
-// line 168 "parser/com/httpQL/QueryProcessor.rl"
+// line 170 "parser/com/httpQL/QueryProcessor.rl"
 		
 		QueryBuilder result = Query.queryBuilder();
 		if(cs >= QueryParser_first_final) {
@@ -631,6 +633,8 @@ case 5:
 			}
 			
 			logger.info("------------------");			
+		} else {
+			throw new ParseException("", 0);
 		}
 		
 		return result.build();

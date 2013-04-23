@@ -3,6 +3,7 @@ package com.httpQL;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.ParseException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -36,7 +37,7 @@ public class Runner {
 		} catch (ConnectorException e) {
 			System.out.println("Network error while connecting to domain "
 					+ domain);
-		} catch (ResponseProcessorException e) {
+		} catch (ResponseProcessorException | ParseException e) {
 			System.out.println("Some error occured while processing query");
 
 		}
@@ -68,11 +69,16 @@ public class Runner {
 			System.out.flush();
 
 			String s = reader.readLine();
+			// CTRL-D
 			if (s == null) {
 				break;
 
-			} else if (s.trim().length() > 0) {
-				new Runner().run(domain, s);
+			} else {
+				s = s.trim();
+
+				if (s.length() > 0) {
+					new Runner().run(domain, s);
+				}
 			}
 		}
 	}

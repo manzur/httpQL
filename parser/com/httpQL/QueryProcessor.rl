@@ -1,6 +1,7 @@
 package com.httpQL;
 
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.LinkedList;
 
@@ -134,14 +135,15 @@ public class QueryProcessor {
 		return Boolean.valueOf(debug);
 	}
 	
-	public Integer process(String queryText) {
+	public Integer process(String queryText) throws ParseException {
 		Query query = parse(queryText);
+		
 		Integer result = queryDB.putQuery(query);
 		
 		return result;
 	}
 	
-	private Query parse(String queryText) { 
+	private Query parse(String queryText) throws ParseException { 
 		String tag, site, attributeName, attributeValue;
 		tag = site = attributeName = attributeValue = null;
 		
@@ -184,6 +186,8 @@ public class QueryProcessor {
 			}
 			
 			logger.info("------------------");			
+		} else {
+			throw new ParseException("", 0);
 		}
 		
 		return result.build();
