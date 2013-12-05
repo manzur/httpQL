@@ -5,7 +5,7 @@
 
 - Web-server is nothing more than *interpretator* that accepts http protocol as a language and produces a web page
 
-So by concluding these two facts it occurs that sql language can be used to model web-client colloboration on top of http.
+So by concluding these two facts it occurs that sql language can be used to model web-client collaboration on top of http.
 
 Let's see some examples how SQL could be used(further on this customized SQL is called httpQL):
 
